@@ -15,7 +15,7 @@ new = new.sort_values(by='date',ascending=True)
 # new = new.reset_index()
 # test for callback
 #df = new
-selected_date = 74
+selected_date = 75
 dates = new['date'].unique()
 dates = dates[selected_date]
 filtered_df = new[new.date == dates]
@@ -24,7 +24,7 @@ print(filtered_df)
 # filtered_df = filtered_df[filtered_df['fips']=='06075']
 
 fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=filtered_df.fips, z=filtered_df.cases,
-                                    colorscale="Inferno", zmin=0, zmax=2000,
+                                    colorscale="Inferno", zmin=0, zmax=2000,zmid=100,
                                     marker_opacity=0.95, marker_line_width=0,))#colorbar={'dtick':'log_10(5)'}
 fig.update_layout(mapbox_style="carto-positron",
                   mapbox_zoom=3, mapbox_center = {"lat": 37.0902, "lon": -95.7129})

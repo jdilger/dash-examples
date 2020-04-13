@@ -14,13 +14,17 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
     counties = json.load(response)
 
 
-app = dash.Dash()
+app = dash.Dash(__name__)
+server = app.server
+
 # init map
 tcs = [[0,'rgb(20,11,52)'],[0.3,'rgb(132,32,107)'],[0.85,'rgb(229,92,48)'],[1,'rgb(246,215,70)'] ]
 dates = df['date'].unique()
 current_date = dates[-1]
 current_df = df[df.date == current_date]
-colors = {'bg':'#fcf7fc'}
+colors = {'bg':'#fcf7fc',
+            'txt':'#20293d'}
+font_style = {"text-align":"center","font-family":"'Helvetica', serif","font-weight": '400','color':colors['txt'],'line-height': '1.42'}
 
 fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=current_df.fips, z=current_df.cases,
                                     colorscale=tcs, zmin=0, zmax=2000,
@@ -37,14 +41,16 @@ txt = '''
 A simple map displaying the daily confirmed cases by county for the US. Clicking on a county will
  update the graph to the right showing cumulative cases to date. Data is directly pulled from the [NYT
  Github](https://github.com/nytimes/covid-19-data/). 
-'''
+
+Displaying data from: {}
+'''.format(current_date)
 about = '''
 ###
 About the author: My name is John Dilger, I am a research scientist at [Spatial Informatics Group](https://sig-gis.com)
-who specializes in remote sensing applications as GIS.
+specializing in remote sensing applications and GIS.
 '''
 app.layout = html.Div(style={'backgroundColor': colors['bg']},children=[
-    html.Div([dcc.Markdown(children=txt)],style={"text-align":"center"}),
+    html.Div([dcc.Markdown(children=txt)],style=font_style),
 
     html.Div([
 
@@ -63,7 +69,7 @@ app.layout = html.Div(style={'backgroundColor': colors['bg']},children=[
         ],style={'width': '40%', 'float': 'right', 'display': 'inline-block'})
     ]),
 
-    html.Div([dcc.Markdown(children=about)],style={"text-align":'left'})
+    html.Div([dcc.Markdown(children=about)],style=font_style)
 
 ])
 
@@ -79,5 +85,6 @@ def updatePlot(county):
             'x':0.5
             })
 	return new_fig
+
 if __name__ == '__main__':
     app.run_server(debug=True)
